@@ -125,8 +125,7 @@ def agent_router(query):
 
     reasoning = ""
 
-    if "pipeline" in query or "deal" in query:
-
+    if any(word in query for word in ["pipeline","deal","sales","revenue"]):
         reasoning = """
 Agent reasoning:
 User asked about sales pipeline.
@@ -186,4 +185,5 @@ for role, message in st.session_state.chat_history:
         st.markdown(f"**User:** {message}")
 
     else:
+
         st.markdown(f"**Agent:** {message}")
