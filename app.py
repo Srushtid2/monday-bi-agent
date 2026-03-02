@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 
 MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
+
 DEALS_BOARD = 5026942224
 WORK_ORDERS_BOARD = 5026942242
 
@@ -75,11 +76,10 @@ def pipeline_summary():
 
     total_value = 0
 
+    # scan all column values for numbers
     for deal in deals:
-
-        if "numeric_mm12phnf" in deal:
-            value = clean_numeric(deal["numeric_mm12phnf"])
-            total_value += value
+        for col_value in deal.values():
+            total_value += clean_numeric(col_value)
 
     count = len(deals)
 
@@ -123,9 +123,8 @@ def agent_router(query):
 
     query = query.lower()
 
-    reasoning = ""
-
     if any(word in query for word in ["pipeline","deal","sales","revenue"]):
+
         reasoning = """
 Agent reasoning:
 User asked about sales pipeline.
@@ -134,7 +133,7 @@ Tool selected: pipeline_summary()
 
         result = pipeline_summary()
 
-    elif "work order" in query or "operations" in query:
+    elif any(word in query for word in ["work order","operations","task"]):
 
         reasoning = """
 Agent reasoning:
@@ -183,7 +182,5 @@ for role, message in st.session_state.chat_history:
 
     if role == "User":
         st.markdown(f"**User:** {message}")
-
     else:
-
         st.markdown(f"**Agent:** {message}")
